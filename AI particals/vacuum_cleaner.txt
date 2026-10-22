@@ -1,0 +1,56 @@
+import random
+
+# Vacuum Cleaner Problem - Two-room world (A and B)
+# Simple Reflex Agent: Clean if dirty, otherwise move to the other room.
+
+
+class VacuumEnvironment:
+    def __init__(self):
+        self.status = {
+            "A": random.choice(["Clean", "Dirty"]),
+            "B": random.choice(["Clean", "Dirty"]),
+        }
+        self.location = random.choice(["A", "B"])
+
+
+def reflex_vacuum_agent(location, status):
+    if status == "Dirty":
+        return "Suck"
+    elif location == "A":
+        return "Right"
+    else:
+        return "Left"
+
+
+def run(steps=10):
+    env = VacuumEnvironment()
+    print("Initial State:", env.status, "| Vacuum at:", env.location)
+    print("-" * 50)
+
+    performance = 0
+
+    for step in range(1, steps + 1):
+        loc = env.location
+        action = reflex_vacuum_agent(loc, env.status[loc])
+
+        if action == "Suck":
+            env.status[loc] = "Clean"
+            performance += 10
+        elif action == "Right":
+            env.location = "B"
+            performance -= 1
+        elif action == "Left":
+            env.location = "A"
+            performance -= 1
+
+        print(f"Step {step}: Location={loc}, Action={action}, "
+              f"State={env.status}, Score={performance}")
+
+        if env.status["A"] == "Clean" and env.status["B"] == "Clean":
+            print("-" * 50)
+            print("Both rooms are clean. Final Score:", performance)
+            break
+
+
+if __name__ == "__main__":
+    run()

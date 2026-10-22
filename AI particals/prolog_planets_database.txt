@@ -1,0 +1,50 @@
+% Prolog: Planets Database
+% planet(Name, OrderFromSun, DiameterInKm, Moons).
+
+planet(mercury, 1,   4879,   0).
+planet(venus,   2,  12104,   0).
+planet(earth,   3,  12756,   1).
+planet(mars,    4,   6792,   2).
+planet(jupiter, 5, 142984,  95).
+planet(saturn,  6, 120536, 146).
+planet(uranus,  7,  51118,  28).
+planet(neptune, 8,  49528,  16).
+
+% Planet type
+type(mercury, terrestrial).
+type(venus,   terrestrial).
+type(earth,   terrestrial).
+type(mars,    terrestrial).
+type(jupiter, gas_giant).
+type(saturn,  gas_giant).
+type(uranus,  ice_giant).
+type(neptune, ice_giant).
+
+% Planets that have moons
+has_moons(P) :-
+    planet(P, _, _, M),
+    M > 0.
+
+% Planet bigger than another one
+bigger(P1, P2) :-
+    planet(P1, _, D1, _),
+    planet(P2, _, D2, _),
+    D1 > D2.
+
+% Planet is closer to the Sun than another
+closer_to_sun(P1, P2) :-
+    planet(P1, O1, _, _),
+    planet(P2, O2, _, _),
+    O1 < O2.
+
+% Planets of a given type
+planets_of_type(Type, P) :-
+    type(P, Type).
+
+% Sample queries:
+% ?- planet(earth, Order, Dia, Moons).
+% ?- has_moons(P).
+% ?- bigger(jupiter, earth).
+% ?- closer_to_sun(venus, mars).
+% ?- planets_of_type(gas_giant, P).
+% ?- planet(P, 4, _, _).

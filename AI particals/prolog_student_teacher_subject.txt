@@ -1,0 +1,62 @@
+% Prolog: Student - Teacher - Subject Code
+
+% student(Name).
+student(rahul).
+student(priya).
+student(arjun).
+student(sneha).
+
+% subject(Code, SubjectName).
+subject(cs101, 'Programming in C').
+subject(cs102, 'Data Structures').
+subject(cs103, 'Artificial Intelligence').
+subject(ma101, 'Engineering Mathematics').
+
+% teacher(Name).
+teacher(dr_kumar).
+teacher(dr_meena).
+teacher(dr_ravi).
+
+% teaches(Teacher, SubjectCode).
+teaches(dr_kumar, cs101).
+teaches(dr_kumar, cs102).
+teaches(dr_meena, cs103).
+teaches(dr_ravi,  ma101).
+
+% studies(Student, SubjectCode).
+studies(rahul,  cs101).
+studies(rahul,  cs103).
+studies(priya,  cs102).
+studies(priya,  ma101).
+studies(arjun,  cs101).
+studies(arjun,  cs102).
+studies(sneha,  cs103).
+studies(sneha,  ma101).
+
+% Teacher of a student (student studies a subject the teacher teaches)
+taught_by(Student, Teacher) :-
+    studies(Student, Code),
+    teaches(Teacher, Code).
+
+% Students of a teacher
+teacher_of_student(Teacher, Student) :-
+    taught_by(Student, Teacher).
+
+% Subject name studied by a student
+student_subject_name(Student, SubjectName) :-
+    studies(Student, Code),
+    subject(Code, SubjectName).
+
+% Two students are classmates if they share a subject
+classmates(S1, S2) :-
+    studies(S1, Code),
+    studies(S2, Code),
+    S1 \= S2.
+
+% Sample queries:
+% ?- taught_by(rahul, T).
+% ?- teaches(dr_kumar, Code).
+% ?- studies(S, cs101).
+% ?- student_subject_name(priya, Name).
+% ?- classmates(rahul, X).
+% ?- teacher_of_student(dr_meena, S).
