@@ -1,0 +1,95 @@
+import heapq
+
+GOAL = (1, 2, 3,
+        4, 5, 6,
+        7, 8, 0)   # 0 represents the blank tile
+
+
+def manhattan(state):
+    dist = 0
+    for i, tile in enumerate(state):
+        if tile != 0:
+            goal_pos = GOAL.index(tile)
+            dist += abs(i // 3 - goal_pos // 3) + abs(i % 3 - goal_pos % 3)
+    return dist
+
+
+def get_neighbors(state):
+    neighbors = []
+    blank = state.index(0)
+    row, col = divmod(blank, 3)
+    moves = {"Up": (-1, 0), "Down": (1, 0), "Left": (0, -1), "Right": (0, 1)}
+
+    for move, (dr, dc) in moves.items():
+        r, c = row + dr, col + dc
+        if 0 <= r < 3 and 0 <= c < 3:
+            new_blank = r * 3 + c
+            new_state = list(state)
+            new_state[blank], new_state[new_blank] = new_state[new_blank], new_state[blank]
+            neighbors.append((move, tuple(new_state)))
+    return neighbors
+
+
+def is_solvable(state):
+    tiles = [t for t in state if t != 0]
+    inversions = sum(1 for i in range(len(tiles))
+                     for j in range(i + 1, len(tiles)) if tiles[i] > tiles[j])
+    return inversions % 2 == 0
+
+
+def solve(start):
+    """A* search using Manhattan distance heuristic."""
+    if not is_solvable(start):
+        return None
+
+    open_list = [(manhattan(start), 0, start, [])]
+    visited = set()
+
+    while open_list:
+        f, g, state, path = heapq.heappop(open_list)
+
+        if state == GOAL:
+            return path
+
+        if state in visited:
+            continue
+        visited.add(state)
+
+        for move, nxt in get_neighbors(state):
+            if nxt not in visited:
+                heapq.heappush(open_list,
+                               (g + 1 + manhattan(nxt), g + 1, nxt, path + [move]))
+    return None
+
+
+def print_state(state):
+    for i in range(0, 9, 3):
+        print(" ".join(str(x) if x != 0 else "_" for x in state[i:i + 3]))
+    print()
+
+
+if __name__ == "__main__":
+    start_state = (1, 2, 3,
+                   4, 0, 6,
+                   7, 5, 8)
+
+    print("Start State:")
+    print_state(start_state)
+
+    solution = solve(start_state)
+
+    if solution is None:
+        print("This puzzle is not solvable.")
+    else:
+        print("Solution found in", len(solution), "moves:")
+        print(" -> ".join(solution))
+        print()
+
+        state = start_state
+        for move in solution:
+            for m, nxt in get_neighbors(state):
+                if m == move:
+                    state = nxt
+                    break
+            print("Move:", move)
+            print_state(state)
